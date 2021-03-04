@@ -1,6 +1,5 @@
 import * as socketActions from "../actions/socket";
 import * as providerActions from "../actions/provider";
-import * as uiActions from '../actions/ui';
 
 const connectFlow = ({api, log}) => ({dispatch}) => next => async (action) => {
     next(action);
@@ -57,7 +56,7 @@ const receiveMessageFlow = ({api, log}) => ({dispatch}) => next => async (action
         try {
             const data = action.payload.data;
 
-            if(data.type == providerActions.CALL_GAMEPOWER_EXTRINSIC) {
+            if(data.type === providerActions.CALL_GAMEPOWER_EXTRINSIC) {
                 dispatch(providerActions.callGamerpowerExtrinsic(data));
             }
         } catch (error) {

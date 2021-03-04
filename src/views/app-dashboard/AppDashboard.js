@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { HashRouter as Router, Switch, Route, useRouteMatch, useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { getActiveAccount } from '../../application/selectors/keyring';
@@ -12,17 +13,19 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import InputBase from '@material-ui/core/InputBase';
-import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
-import MenuIcon from '@material-ui/icons/Menu';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import Container from '@material-ui/core/Container';
-import CssBaseline from '@material-ui/core/CssBaseline';
 import Popover from '@material-ui/core/Popover';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 
 import ProfileCard from '../../components/profile-card/ProfileCard';
-import GameList from '../game-library/GameLibrary';
+import GameLibrary from '../game-library/GameLibrary';
+import Collectables from '../collectables/Collectables';
+import Market from '../market/Market';
+import Community from '../community/Community';
 
 const useStyles = makeStyles((theme) => ({
     grow: {
@@ -34,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
       overflow: 'auto',
     },
     appBar: {
-        '-webkit-app-region': 'drag'
+      zIndex: theme.zIndex.drawer + 1,
     },
     menuButton: {
       marginRight: theme.spacing(2),
@@ -96,104 +99,129 @@ const useStyles = makeStyles((theme) => ({
 
 
 function AppDashboard() {
+    let { path, url } = useRouteMatch();
+    const history = useHistory();
     const dispatch = useDispatch();
     const activeAccount = useSelector(getActiveAccount);
 
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    const [moreAnchorEl, setMoreAnchorEl] = React.useState(null);
 
     const isMenuOpen = Boolean(anchorEl);
-    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
     useEffect(() => {
         if(activeAccount) {
-            console.log(activeAccount.accountInfo);
+        } else {
+          history.push("/login");
         }
     }, [activeAccount]);
 
     const handleProfileMenuOpen = (event) => {
-        setAnchorEl(event.currentTarget);
-      };
+      setAnchorEl(event.currentTarget);
+    };
+
+    const handleProfileMenuClose = (event) => {
+      setAnchorEl(null);
+    };
+
+    const handleMoreMenuOpen = (event) => {
+      setMoreAnchorEl(event.currentTarget);
+    }
+  
+    const handleMoreMenuClose = () => {
+      setMoreAnchorEl(null);
+    };
+  
+    const handleSectionChange = (section) => {
+      history.push(section);
+    };
     
-      const handleMobileMenuClose = () => {
-        setMobileMoreAnchorEl(null);
-      };
-    
-      const handleMenuClose = () => {
-        setAnchorEl(null);
-        handleMobileMenuClose();
-      };
-    
-      const handleMobileMenuOpen = (event) => {
-        setMobileMoreAnchorEl(event.currentTarget);
-      };
-    
-      const menuId = 'primary-search-account-menu';
+    const menuId = 'primary-search-account-menu';
 
 
-      const renderPopover = (
-        <Popover
-            id={menuId}
-            open={isMenuOpen}
-            anchorEl={anchorEl}
-            onClose={handleMenuClose}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-            }}
-        >
-            <ProfileCard account={activeAccount} discription="My profile" />
-        </Popover>
-      );
-    
-      const mobileMenuId = 'primary-search-account-menu-mobile';
+    const renderPopover = (
+      <Popover
+          id={menuId}
+          open={isMenuOpen}
+          anchorEl={anchorEl}
+          onClose={handleProfileMenuClose}
+          anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+          }}
+          transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+          }}
+      >
+          <ProfileCard account={activeAccount} discription="My profile" />
+      </Popover>
+    );
+
+    const renderMoreMenu = (
+      <Menu
+        id="more-menu"
+        anchorEl={moreAnchorEl}
+        keepMounted
+        open={Boolean(moreAnchorEl)}
+        onClose={handleMoreMenuClose}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+        }}
+      >
+        <MenuItem onClick={handleMoreMenuClose}>Mods</MenuItem>
+        <MenuItem onClick={handleMoreMenuClose}>Token Swap</MenuItem>
+        <MenuItem onClick={handleMoreMenuClose}>Help</MenuItem>
+      </Menu>
+    );
     
 
 
 
     return (
       <React.Fragment>
-            <AppBar position="sticky">
+            <AppBar className={classes.appBar} position="sticky">
                 <Toolbar>
-                <IconButton
-                    edge="start"
-                    className={classes.menuButton}
-                    color="inherit"
-                    aria-label="open drawer"
-                >
-                    <MenuIcon />
-                </IconButton>
-                <Button className={classes.title} disableRipple disableFocusRipple>
+                <Button className={classes.title} onClick={() => handleSectionChange(`${url}`)} disableRipple disableFocusRipple>
                   <Typography variant="h6" noWrap>
                     Games
                   </Typography>
                 </Button>
-                <Button className={classes.title} disableRipple disableFocusRipple>
+                <Button className={classes.title} onClick={() => handleSectionChange(`${url}/collectables`)} disableRipple disableFocusRipple>
                   <Typography variant="h6" noWrap>
-                    Collectables
+                    Inventory
                   </Typography>
                 </Button>
-                <Button className={classes.title} disableRipple disableFocusRipple>
+                <Button className={classes.title} onClick={() => handleSectionChange(`${url}/market`)} disableRipple disableFocusRipple>
                   <Typography variant="h6" noWrap>
                     Market
                   </Typography>
                 </Button>
-                <Button className={classes.title} disableRipple disableFocusRipple>
+                <Button className={classes.title} onClick={() => handleSectionChange(`${url}/community`)} disableRipple disableFocusRipple>
                   <Typography variant="h6" noWrap>
                     Community
                   </Typography>
                 </Button>
+                <IconButton
+                    edge="start"
+                    onClick={handleMoreMenuOpen}
+                    className={classes.menuButton}
+                    color="inherit"
+                >
+                    <MoreVertIcon />
+                </IconButton>
                 <div className={classes.search}>
                     <div className={classes.searchIcon}>
                     <SearchIcon />
                     </div>
                     <InputBase
-                    placeholder="Search Games…"
+                    placeholder="Search GamePower"
                     classes={{
                         root: classes.inputRoot,
                         input: classes.inputInput,
@@ -219,9 +247,17 @@ function AppDashboard() {
                 </Toolbar>
             </AppBar>
             {renderPopover}
+            {renderMoreMenu}
             
             <Container maxWidth={false} className={classes.scrollableContainer}>
-              <GameList />
+              <Router>
+                <Switch>
+                  <Route path={`${path}`} exact component={GameLibrary}/>
+                  <Route path={`${path}/collectables`} component={Collectables}/>
+                  <Route path={`${path}/market`} component={Market}/>
+                  <Route path={`${path}/community`} component={Community}/>
+                </Switch>
+              </Router>
             </Container>
             
       </React.Fragment>

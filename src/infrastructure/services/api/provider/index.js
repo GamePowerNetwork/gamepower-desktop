@@ -59,8 +59,7 @@ export default {
     },
 
     subscribeToBalanceUpdates: async (dispatch, connection, account) => {
-        const unsub = await connection.query.system.account(account.address, ({ nonce, data: balance }) => {
-            console.log(`free balance is ${balance.free} with ${balance.reserved} reserved and a nonce of ${nonce}`);
+        await connection.query.system.account(account.address, ({ nonce, data: balance }) => {
             dispatch(keyringActions.accountBalanceUpdated({balance, nonce}))
         });
     },

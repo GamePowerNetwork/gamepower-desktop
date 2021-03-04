@@ -15,7 +15,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import { Avatar, makeStyles } from '@material-ui/core';
 
-import { getLoading, getLoadingMessage, getIn } from '../../application/selectors/ui';
+import { getLoading, getLoadingMessage } from '../../application/selectors/ui';
 import { getActiveAccount, getAccounts, getPhrase, getKeyringInitialized } from '../../application/selectors/keyring';
 import { 
   loadAccounts, 

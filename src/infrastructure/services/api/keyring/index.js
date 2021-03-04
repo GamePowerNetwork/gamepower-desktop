@@ -1,8 +1,6 @@
 import keyring from '@polkadot/ui-keyring';
 import { BrowserStore } from '@polkadot/ui-keyring/stores';
-import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate, cryptoWaitReady } from '@polkadot/util-crypto';
-import { stringToU8a, u8aToHex } from '@polkadot/util';
 
 
 export default {

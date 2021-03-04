@@ -7,6 +7,7 @@ const socketActions = require('./app_modules/socketActions');
 var express = require('express')
 var exp = express()
 var server = require('http').createServer(exp)
+var WebSocketClient = require('websocket').client
 const io = require('socket.io')(server, {
   cors: {
     origin: '*',
@@ -37,8 +38,8 @@ let gameWindow;
 function createMainWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1260,
-    height: 810,
+    width: 1254,
+    height: 880,
     frame:false,
     titleBarStyle: "hidden",
     webPreferences: {
@@ -57,7 +58,7 @@ function createMainWindow () {
   mainWindow.removeMenu()
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 }
 
 function createGameWindow () {
@@ -132,3 +133,35 @@ io.on("connection", function(socket) {
 server.listen(3182, function () {
   console.log('[server] listening at port %d', 3182);
 });
+
+var client = new WebSocketClient();
+
+client.on('connectFailed', function(error) {
+    console.log('Connect Error: ' + error.toString());
+});
+
+client.on('connect', function(connection) {
+    console.log('WebSocket Client Connected');
+    connection.on('error', function(error) {
+        console.log("Connection Error: " + error.toString());
+    });
+    connection.on('close', function() {
+        console.log('echo-protocol Connection Closed');
+    });
+    connection.on('message', function(message) {
+        if (message.type === 'utf8') {
+            console.log("Received: '" + message.utf8Data + "'");
+        }
+    });
+    
+    function sendNumber() {
+        if (connection.connected) {
+            var number = Math.round(Math.random() * 0xFFFFFF);
+            connection.sendUTF(number.toString());
+            setTimeout(sendNumber, 1000);
+        }
+    }
+    sendNumber();
+});
+
+client.connect('wss://gamepower.io/', 'echo-protocol');
