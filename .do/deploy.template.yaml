@@ -1,0 +1,9 @@
+spec:
+  name: gamepower-desktop
+  services:
+  - build_command: yarn build
+    environment_slug: node-js
+    git:
+      branch: dev
+      repo_clone_url: https://github.com/GamePowerNetwork/gamepower-desktop.git
+    name: gamepower-desktop

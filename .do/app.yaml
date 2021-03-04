@@ -1,0 +1,9 @@
+name: gamepower-desktop
+services:
+- build_command: yarn build
+  environment_slug: node-js
+  github:
+    branch: dev
+    deploy_on_push: true
+    repo: GamePowerNetwork/gamepower-desktop
+  name: gamepower-desktop
