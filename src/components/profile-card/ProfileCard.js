@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 import Identicon from '@polkadot/react-identicon';
@@ -54,7 +54,6 @@ function ProfileCard(props) {
         }
     }
 
-
     return (
         <Card raised={true} className={classes.root}>
             <CardActionArea>
@@ -67,29 +66,24 @@ function ProfileCard(props) {
                     {props.account?.meta.name}
                 </Typography>
                 <Typography variant="body2" color="textSecondary" component="p">
-                Balance: {accountBalance?.balance.free.toString()}
+                {accountBalance?.formattedBalance}
                 </Typography>
                 <List component="nav" className={classes.root} aria-label="mailbox folders">
-                    <ListItem button>
+                    <ListItem button divider>
+                        <ListItemText primary="Wallet" />
+                    </ListItem>
+                    <ListItem button divider>
                         <ListItemText primary="Friends" />
                     </ListItem>
-                    <Divider />
                     <ListItem button divider>
                         <ListItemText primary="Subscriptions" />
                     </ListItem>
-                    <Divider light />
-                    <ListItem button>
-                        <ListItemText primary="Wallet" />
-                    </ListItem>
-                    <Divider light />
-                    <ListItem button>
+                    <ListItem button divider>
                         <ListItemText primary="Settings" />
                     </ListItem>
-                    <Divider light />
                     <ListItem button>
                         <ListItemText primary="Logout" />
                     </ListItem>
-                    <Divider light />
                     <ListItem >
                         <FormGroup>
                             <FormControlLabel

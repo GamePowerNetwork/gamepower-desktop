@@ -33,6 +33,11 @@ const theme = createMuiTheme({
             root: {
                 backgroundColor: "#202020",
             }
+        },
+        MuiTypography: {
+            root: {
+                color: "rgb(201, 196, 189)",
+            }
         }
     }
 })

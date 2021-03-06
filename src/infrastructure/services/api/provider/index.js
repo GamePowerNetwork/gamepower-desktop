@@ -2,6 +2,8 @@ import { ApiPromise, WsProvider } from '@polkadot/api';
 import { sendMessgae } from '../../../../application/actions/socket';
 import * as keyringActions from '../../../../application/actions/keyring';
 
+import { formatBalance } from '@polkadot/util';
+
 export default {
     connect: async (uri) => {
         const wsProvider = new WsProvider(uri);
@@ -60,7 +62,8 @@ export default {
 
     subscribeToBalanceUpdates: async (dispatch, connection, account) => {
         await connection.query.system.account(account.address, ({ nonce, data: balance }) => {
-            dispatch(keyringActions.accountBalanceUpdated({balance, nonce}))
+            const formattedBalance = formatBalance(balance.free, { forceUnit: '-' }, 12);
+            dispatch(keyringActions.accountBalanceUpdated({formattedBalance, nonce}))
         });
     },
 

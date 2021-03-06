@@ -8,7 +8,7 @@ const connectProviderFlow = ({api}) => ({dispatch}) => next => async (action) =>
         try {
             dispatch(uiActions.setLoadingMessage("Connecting to blockchain"));
             dispatch(uiActions.setLoading(true));
-            const connection = await api.provider.connect();
+            const connection = await api.provider.connect("wss://gamepower.io");
             dispatch(providerActions.connectProviderSuccess(connection));
             dispatch(uiActions.setLoading(false));
         } catch (error) {
