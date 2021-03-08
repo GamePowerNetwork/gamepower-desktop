@@ -40,6 +40,8 @@ function createMainWindow () {
   mainWindow = new BrowserWindow({
     width: 1254,
     height: 880,
+    minWidth:1254,
+    minHeight: 880,
     frame:false,
     titleBarStyle: "hidden",
     webPreferences: {
@@ -80,6 +82,7 @@ function createGameWindow () {
 
   // remove the menu
   gameWindow.removeMenu()
+  gameWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
@@ -118,9 +121,22 @@ io.on("connection", function(socket) {
     socket.broadcast.emit('action', socketActions.receiveMessgae(parsedData));
   });
 
+  socket.on('storage', (data) => {
+    const parsedData = JSON.parse(data);
+    socket.broadcast.emit('action', socketActions.receiveMessgae(parsedData));
+  });
+
   socket.on('action', (message) => {
     if(message.type == socketActions.SEND_MESSAGE) {
       socket.broadcast.emit(socketActions.SEND_MESSAGE, message.payload.data);
+    }
+
+    if(message.type == socketActions.SEND_EXTRINSIC) {
+      socket.broadcast.emit(socketActions.SEND_EXTRINSIC, message.payload.data);
+    }
+
+    if(message.type == socketActions.SEND_STORAGE) {
+      socket.broadcast.emit(socketActions.SEND_STORAGE, message.payload.data);
     }
 
     if(message.type == socketActions.OPEN_WINDOW) {

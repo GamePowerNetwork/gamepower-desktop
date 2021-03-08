@@ -1,5 +1,5 @@
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { sendMessgae } from '../../../../application/actions/socket';
+import { sendExtrinsic, sendMessgae, sendStorage } from '../../../../application/actions/socket';
 import * as keyringActions from '../../../../application/actions/keyring';
 
 import { formatBalance } from '@polkadot/util';
@@ -60,6 +60,20 @@ export default {
         return connection;
     },
 
+    queryGamepower: async (dispatch, connection, account) => {
+        console.log(account);
+        const returnValue = await connection.query.gamepower.playerLights(account.address);
+
+
+        let result = {
+            section: 'storage',
+            method: 'playerLights',
+            data: returnValue
+        }
+        console.log(JSON.stringify(result));
+        dispatch(sendStorage(JSON.stringify(result)));
+    },
+
     subscribeToBalanceUpdates: async (dispatch, connection, account) => {
         await connection.query.system.account(account.address, ({ nonce, data: balance }) => {
             const formattedBalance = formatBalance(balance.free, { forceUnit: '-' }, 12);
@@ -79,7 +93,7 @@ export default {
                     data: events[0].event.data
                 }
 
-                dispatch(sendMessgae(JSON.stringify(result)));
+                dispatch(sendExtrinsic(JSON.stringify(result)));
 
                 unsub();
             } else {

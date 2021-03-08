@@ -49,15 +49,23 @@ const sendMessageFlow = ({api, log}) => ({dispatch}) => next => async (action) =
     }
 }
 
-const receiveMessageFlow = ({api, log}) => ({dispatch}) => next => async (action) => {
+const receiveMessageFlow = ({api, log}) => ({dispatch, getState}) => next => async (action) => {
     next(action);
 
     if (action.type === socketActions.RECEIVE_MESSAGE) {
         try {
             const data = action.payload.data;
 
-            if(data.type === providerActions.CALL_GAMEPOWER_EXTRINSIC) {
-                dispatch(providerActions.callGamerpowerExtrinsic(data));
+            const account = getState().keyring.activeAccount;
+
+            if(account) {
+                if(data.type === providerActions.CALL_GAMEPOWER_EXTRINSIC) {
+                    dispatch(providerActions.callGamerpowerExtrinsic(data));
+                }
+
+                if(data.type === providerActions.CALL_GAMEPOWER_STORAGE) {
+                    dispatch(providerActions.callGamepowerStorage(null));
+                }
             }
         } catch (error) {
             log("ERROR: ", error);
