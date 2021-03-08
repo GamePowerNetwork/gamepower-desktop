@@ -5,9 +5,52 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+::-webkit-scrollbar {     
+  background: "#121212";
+  width: .5em;
+}
+
+::-webkit-scrollbar-track {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb:window-inactive,
+::-webkit-scrollbar-thumb {
+  background-color: rgb(49, 49, 49);
+  border-radius: 2em;
+}
+
+::-webkit-scrollbar-track-piece:start {
+  background: transparent;
+  margin-top: 33px;
+}
+
+:not(input):not(textarea),
+:not(input):not(textarea)::after,
+:not(input):not(textarea)::before {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+input, button, textarea, :focus {
+    outline: none; 
+}
+
+a:not([draggable=true]), img:not([draggable=true]) {
+  -webkit-user-drag: none;
+  user-drag: none; /* Technically not supported in Electron yet */
+}
+a[href^="http://"],
+a[href^="https://"],
+a[href^="ftp://"] {
+  -webkit-user-drag: auto;
+  user-drag: auto; /* Technically not supported in Electron yet */
 }
