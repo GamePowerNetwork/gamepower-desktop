@@ -44,7 +44,7 @@ function ItemCard(props) {
                 </Typography>
             </CardContent>
             <CardActions>
-                <Button variant="contained" color="primary">Buy</Button>
+                <Button variant="contained" color="primary">Trade</Button>
             </CardActions>
         </Card>
     );

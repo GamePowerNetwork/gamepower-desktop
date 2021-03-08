@@ -4,6 +4,8 @@ export const CONNECT_FAILURE     = '[socket] connect failure';
 export const DISCONNECT          = '[socket] disconnect';
 
 export const SEND_MESSAGE        = 'game://message';
+export const SEND_EXTRINSIC      = 'game://message/extrinsic';
+export const SEND_STORAGE        = 'game://message/storage';
 export const RECEIVE_MESSAGE     = '[socket] receive message';
 
 export const OPEN_WINDOW         = 'app://open';
@@ -35,6 +37,24 @@ export const sendMessgae = (data) => ({
         data,
     }
 });
+
+export const sendExtrinsic = (data) => ({
+    type: SEND_EXTRINSIC,
+    meta: {remote: true},
+    payload: {
+        data,
+    }
+});
+
+
+export const sendStorage = (data) => ({
+    type: SEND_STORAGE,
+    meta: {remote: true},
+    payload: {
+        data,
+    }
+});
+
 
 export const receiveMessgae = (data) => ({
     type: RECEIVE_MESSAGE,
