@@ -3,16 +3,35 @@ const {app, BrowserWindow, ipcMain} = require('electron')
 const { default: installExtension, REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer')
 const path = require('path')
 const fs = require('fs')
+const WebSocket = require('ws')
 const socketActions = require('./app_modules/socketActions');
 var express = require('express')
 var exp = express()
 var server = require('http').createServer(exp)
-var WebSocketClient = require('websocket').client
+
 const io = require('socket.io')(server, {
   cors: {
     origin: '*',
   }
 });
+
+const PORT = 30066;
+const wss = new WebSocket.Server({port: PORT}, () => {
+  console.log('server started')
+})
+
+wss.on('connection', (ws) => {
+  ws.on('message', (data) => {
+      console.log('data received %o' + data)
+  })
+
+  ws.send('welcome')
+})
+
+wss.on('listening', () => {
+  console.log('server is listening on port: ' + PORT);
+})
+
 
 exp.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', req.get('Origin') || '*');
