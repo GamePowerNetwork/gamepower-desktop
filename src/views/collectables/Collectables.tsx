@@ -74,42 +74,14 @@ function Collectables() {
   const [inventory, setInventory] = useState<IInventoryItem[]>([]);
 
   useEffect(() => {
-    setInventory(items);
-  }, [dispatch]);
+    var storedItems = [];
+    const items:string | null = localStorage.getItem("items");
 
-
-  const items = [
-    {
-        title: 'Obsidian Kataclysm',
-        creator: 'Lost Relics',
-        image: 'sword',
-        price: 20,
-    },
-    {
-        title: 'Golden Evanbrook egg',
-        creator: 'Lost Relics',
-        image: 'egg',
-        price: 2,
-    },
-    {
-        title: 'Atari Dress',
-        creator: 'Atari',
-        image: 'dress',
-        price: 30,
-    },
-    {
-        title: 'Arena Ticket',
-        creator: '9Lives Arena',
-        image: 'arena',
-        price: 1,
-    },
-    {
-        title: 'Golden Evanbrook egg',
-        creator: 'Lost Relics',
-        image: 'egg',
-        price: 2,
+    if(items != null) {
+        storedItems = JSON.parse(items as string);
     }
-];
+    setInventory(storedItems);
+  }, [dispatch]);
 
 
   return (

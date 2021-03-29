@@ -143,7 +143,6 @@ export default function Signup() {
                 />
 
                 <TextField
-                    autoFocus
                     margin="normal"
                     id="password-confirm"
                     label="Confirm Password"

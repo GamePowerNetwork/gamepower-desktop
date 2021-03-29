@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow, ipcMain} = require('electron')
+const {app, BrowserWindow, Tray, ipcMain} = require('electron')
 const { default: installExtension, REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } = require('electron-devtools-installer')
 const path = require('path')
 const fs = require('fs')
@@ -8,6 +8,7 @@ const socketActions = require('./app_modules/socketActions');
 var express = require('express')
 var exp = express()
 var server = require('http').createServer(exp)
+const {api, MessageTypes, IMessage} = require('@gamepower/api')
 
 const io = require('socket.io')(server, {
   cors: {
@@ -22,10 +23,90 @@ const wss = new WebSocket.Server({port: PORT}, () => {
 
 wss.on('connection', (ws) => {
   ws.on('message', (data) => {
-      console.log('data received %o' + data)
+    let rawData = data.toString();
+    console.log(rawData);
+    api.parseData(rawData);
   })
 
-  ws.send('welcome')
+  ws.send(JSON.stringify({
+    Type: MessageTypes.TitleDataResult,
+    Data: {
+      Name: "Coin Hunter",
+      Token: "jaefssieef4345ksadfifll32s"
+    }
+  }))
+
+  // Connect to provider
+  api.connect("wss://gamepower.io");
+
+  api.on("appRequest", (data) => {
+    createConfirmationWindow();
+  })
+
+  api.on("grantCollectable", (data) => {
+    mainWindow.webContents.send("grantCollectable", data);
+  })
+
+  api.on("userData", (data) => {
+    console.log(data);
+    ws.send(JSON.stringify({
+      Type: MessageTypes.ApiResult,
+      Data: {
+        Key: data.Key,
+        Value: data.Data
+      }
+    }))
+  })
+
+  ipcMain.on('request:declined', (event, arg) => {
+    ws.send(JSON.stringify({
+      Type: MessageTypes.AppResult,
+      Data: {
+        Accepted: false
+      }
+    }))
+  })
+  
+  ipcMain.on('request:accepted', (event, arg) => {
+    ws.send(JSON.stringify({
+      Type: MessageTypes.AppResult,
+      Data: {
+        Accepted: true
+      }
+    }))
+  })
+
+  ipcMain.on('collectable:declined', (event, arg) => {
+    ws.send(JSON.stringify({
+      Type: "CollectionResult",
+      Data: {
+        Accepted: false
+      }
+    }))
+  })
+  
+  ipcMain.on('collectable:accepted', (event, arg) => {
+
+    let data = {
+      Data: {
+        Key: "hasSword",
+        Value: true,
+        Endpoint: "user/setData"
+      },
+      Type: "ApiRequest"
+    }
+
+    const rawData = JSON.stringify(data);
+    console.log(rawData);
+    api.parseData(rawData);
+
+    ws.send(JSON.stringify({
+      Type: "CollectionResult",
+      Data: {
+        Accepted: true
+      }
+    }))
+  })
 })
 
 wss.on('listening', () => {
@@ -50,9 +131,16 @@ exp.use(express.static(path.join(__dirname, 'public')));
 
 // Main Window
 let mainWindow;
+let tray = null
 
 // Game Window
 let gameWindow;
+
+// Confirmation Window
+let confirmationWindow;
+
+// Grant Collectable Window
+let grantCollectableWindow;
 
 function createMainWindow () {
   // Create the browser window.
@@ -80,6 +168,10 @@ function createMainWindow () {
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools()
+
+  //Tray
+  const iconPath = path.join(__dirname, "./public/favicon.ico");
+  tray = new Tray(iconPath);
 }
 
 function createGameWindow () {
@@ -102,6 +194,54 @@ function createGameWindow () {
   // remove the menu
   gameWindow.removeMenu()
   gameWindow.webContents.openDevTools()
+}
+
+function createConfirmationWindow () {
+  // Create the browser window.
+  confirmationWindow = new BrowserWindow({
+    width: 300,
+    height: 500,
+    frame:false,
+    titleBarStyle: "hidden",
+    movable: false,
+    alwaysOnTop: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      enableRemoteModule:true
+    }
+  })
+
+  // and load the index.html of the app.
+  confirmationWindow.loadURL('http://127.0.0.1:3006/#/confirmation')
+
+  // remove the menu
+  confirmationWindow.removeMenu()
+}
+
+function createGrantCollectableWindow () {
+  // Create the browser window.
+  grantCollectableWindow = new BrowserWindow({
+    width: 470,
+    height: 600,
+    frame:false,
+    titleBarStyle: "hidden",
+    movable: false,
+    alwaysOnTop: true,
+    transparent: true,
+    type:'toolbar',
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      enableRemoteModule:true
+    }
+  })
+
+  // and load the index.html of the app.
+  grantCollectableWindow.loadURL('http://127.0.0.1:3006/#/grant-collectable')
+
+  // remove the menu
+  grantCollectableWindow.removeMenu()
 }
 
 // This method will be called when Electron has finished

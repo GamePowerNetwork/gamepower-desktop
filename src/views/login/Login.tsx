@@ -136,7 +136,7 @@ function Login() {
               autoFocus
               margin="normal"
               id="login-password"
-              label="Confirm Password"
+              label="Password"
               type="password"
               fullWidth
               color="secondary"

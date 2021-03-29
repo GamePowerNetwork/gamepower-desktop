@@ -9,7 +9,7 @@ export default {
             titleHorizontalAlignment: 'center',
         });
 
-        customTitlebar.updateTitle(' ');
+        customTitlebar.updateTitle('*** PROTOTYPE ***');
         
         const menu = new remote.Menu();
 
@@ -25,9 +25,7 @@ export default {
                             accelerator: 'Ctrl+I'
                         },
                         {
-                            label: 'Reload',
-                            click: () => { window.location.reload() },
-                            accelerator: 'Ctrl+R'
+                            role: 'reload'
                         }
                     ]
                 },
